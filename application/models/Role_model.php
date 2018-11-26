@@ -129,7 +129,7 @@ class Role_model extends CI_Model
     public function getPowerData($roleId)
     {
         $powerData = [];
-        $rowsController = $this->tb_method->get_all('*', ['parent_id' => 0, 'is_default' => 0], 'sort', 'asc');
+        $rowsController = $this->tb_method->get_all('*', ['parent_id' => 0], 'sort', 'asc');
         $rowRole = $this->tb_role->get_one(['id' => $roleId]);
         $rowParentRole = $this->tb_role->get_one(['id' => $rowRole['parent_id']]);
         foreach ($rowsController as $controller) {
