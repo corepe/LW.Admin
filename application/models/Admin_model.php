@@ -40,6 +40,7 @@ class Admin_model extends CI_Model
 
     public function getEditData($id)
     {
+        checkInt($id);
         if ($id == 0) {
             $data['info'] = [
                 'id' => 0,
@@ -58,6 +59,7 @@ class Admin_model extends CI_Model
 
     public function edit($id, $post)
     {
+        checkInt($id);
         $field = lwCheckValue($post, ['loginname', 'username', 'password', 'role_id']);
         if ($field === false) {
             $this->rs['msg'] = '参数缺失';
@@ -108,6 +110,7 @@ class Admin_model extends CI_Model
      * $actionName 操作名称
      */
     public function setStatus($id, $status, $actionName = '操作') {
+        checkInt($id);
         $field = ['status' => $status];
         $where = ['id' => $id];
         $result = $this->tb_admin->update($field, $where);

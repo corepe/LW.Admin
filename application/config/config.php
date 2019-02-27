@@ -24,17 +24,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-if (is_file('./conf/config.php')) {
-    require_once('./conf/config.php');
-} else {
-    die('缺少配置文件，请执行根目录下 /install/index.php 初始化项目');
-}
-
-if (!isset($baseUrl) || !$baseUrl) {
-    die('请在根目录下 conf/config.php 中配置域名地址');
-}
-$baseUrl = empty($_SERVER['HTTPS']) ? 'http://' . $baseUrl : 'https://' . $baseUrl;
-$config['base_url'] = $baseUrl;
+$base_url  = (isset($_SERVER['HTTPS']) ? "https://" : "http://").$_SERVER['HTTP_HOST'];
+$base_url .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+$config['base_url'] = $base_url;
 
 /*
 |--------------------------------------------------------------------------

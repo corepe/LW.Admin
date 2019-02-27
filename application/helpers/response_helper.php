@@ -40,5 +40,8 @@ function checkIdReturn($id){
     }
 }
 
+function checkInt(&$val) {
+    $val = intval($val);
+}
 
 ?>

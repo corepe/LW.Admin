@@ -128,11 +128,8 @@ function step3(&$install_error,&$install_recover){
     $sitepath = strtolower(substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')));
     $sitepath = str_replace('install',"",$sitepath);
     $auto_site_url = strtolower('http://'.$_SERVER['HTTP_HOST'].$sitepath);
-    $domain = $_SERVER['HTTP_HOST'].$sitepath;
-    // 过滤domain末的 / 字符
-    $domain = substr($domain, -1, 1) == '/' ? substr($domain, 0, -1) : $domain;
     // 写入配置文件
-    write_config($domain);
+    write_config();
     
     $_charset = strtolower(DBCHARSET);
     $mysqli->select_db($db_name);
@@ -204,17 +201,8 @@ function showjsmessage($message) {
     ob_flush();
 }
 //写入config文件
-function write_config($domain) {
+function write_config() {
     extract($GLOBALS, EXTR_SKIP);
-    // 重写配置文件
-    $config = 'data/config.php';
-    $configFile = @file_get_contents($config);
-    $configFile = trim($configFile);
-    $configFile = substr($configFile, -2) == '?>' ? substr($configFile, 0, -2) : $configFile;
-    $charset = 'UTF-8';
-    // 替换默认域名
-    $configFile = str_replace("===domain===",  $domain, $configFile);
-    @file_put_contents('../conf/config.php', $configFile);
     // 重写 数据库配置文件
     $database = 'data/database.php';
     $databaseFile = @file_get_contents($database);
