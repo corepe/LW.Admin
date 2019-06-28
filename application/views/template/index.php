@@ -110,7 +110,7 @@
                             text: '你是否要跳转到指定URL:' + data.url,
                             confirm: function() {
                                 window.location.href = data.url
-                            } 
+                            }
                         })
                     }
                 }

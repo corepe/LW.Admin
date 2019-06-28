@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Lw_verify
 {
@@ -9,7 +9,7 @@ class Lw_verify
 
     public function __construct()
     {
-        $this->CI =& get_instance();
+        $this->CI = &get_instance();
     }
 
     /**
@@ -17,11 +17,11 @@ class Lw_verify
      *
      * @return string
      */
-    function generateCode()
+    public function generateCode()
     {
         $this->CI->load->helper('captcha');
         $this->CI->load->library('lw_string');
-        $code = $this->CI->lw_string->buildRandomString(4, 4);
+        $code = $this->CI->lw_string->buildRandomString();
         $this->CI->session->set_userdata('verifyCode', $code);
         $vals = [
             'word' => $code,
@@ -41,18 +41,17 @@ class Lw_verify
                 'background' => [255, 255, 255],
                 'border' => [255, 255, 255],
                 'text' => [0, 0, 0],
-                'grid' => [100, 40, 40]
-            ]
+                'grid' => [100, 40, 40],
+            ],
         ];
         $cap = create_captcha($vals);
         return $cap;
     }
 
-
     public function checkVerifyCode($code)
     {
         $rs = ['success' => false, 'msg' => ''];
-        if(strtolower($code) == strtolower($this->CI->session->verifyCode)) {
+        if (strtolower($code) == strtolower($this->CI->session->verifyCode)) {
             $rs['success'] = true;
             $rs['msg'] = '验证码正确';
             // session 置空
