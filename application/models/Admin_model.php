@@ -13,7 +13,8 @@ class Admin_model extends CI_Model
         $this->load->library('lw_db', ['tb_name' => TB_ADMIN], 'tb_admin');
     }
 
-    public function getIndexData() {
+    public function getIndexData()
+    {
         $this->load->model('role_model');
         $data['roleList'] = $this->role_model->getRoleList();
         return $data;
@@ -80,6 +81,9 @@ class Admin_model extends CI_Model
         $actionName = $id == 0 ? '添加' : '编辑';
         if ($id == 0) {
             $field['status'] = 1;
+            $this->load->library('lw_string');
+            $field['security_code'] = $this->lw_string->buildRandomString(2);
+            $field['password'] = md5($field['security_code'] . $field['password']);
             $result = $id = $this->tb_admin->insert($field);
         } else {
             $adminInfo = $this->tb_admin->get_one(['id' => $id]);
@@ -109,7 +113,8 @@ class Admin_model extends CI_Model
      * $status 状态值
      * $actionName 操作名称
      */
-    public function setStatus($id, $status, $actionName = '操作') {
+    public function setStatus($id, $status, $actionName = '操作')
+    {
         checkInt($id);
         $field = ['status' => $status];
         $where = ['id' => $id];
@@ -133,7 +138,7 @@ class Admin_model extends CI_Model
      */
     public function getAdminInfoByLogin($loginname, $password)
     {
-        $row = $this->db->select(TB_ADMIN.'.*,' . TB_ROLE . '.parent_id, ' . TB_ROLE . '.name as role_name')
+        $row = $this->db->select(TB_ADMIN . '.*,' . TB_ROLE . '.parent_id, ' . TB_ROLE . '.name as role_name')
             ->from(TB_ADMIN)
             ->join(TB_ROLE, TB_ADMIN . '.role_id = ' . TB_ROLE . '.id', 'left')
             ->where([TB_ADMIN . '.loginname' => $loginname])
@@ -159,5 +164,4 @@ class Admin_model extends CI_Model
         $this->rs['info'] = $row;
         return $this->rs;
     }
-
 }

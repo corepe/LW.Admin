@@ -53,9 +53,11 @@ class Role_model extends CI_Model
             return $this->rs;
         }
         if ($id == 0) {
+            $actionName = '添加角色';
             $field['status'] = 1;
             $result = $this->tb_role->insert($field);
         } else {
+            $actionName = '编辑角色';
             $result = $this->tb_role->update($field, ['id' => $id]);
         }
         if ($result) {
@@ -103,17 +105,24 @@ class Role_model extends CI_Model
         $roleId = $roleId == 0 ? $this->session->roleId : $roleId;
         $rowsRole = $this->tb_role->get_all('*', ['status' => 1]);
         $roleList = [];
+        // 当前角色也录入其中
+        $currRole = $this->tb_role->get_one(['id' => $roleId]);
+        if ($currRole) {
+            $currRole['depth'] = 0;
+            $roleList[] = $currRole;
+        }
         $this->roleChildList($rowsRole, $roleId, $roleList);
         return $roleList;
     }
 
     // 专门为 管理员做递归获取其下所有子角色
-    public function roleChildList($rowsRole, $roleId, &$roleList,$depth = 1) {
-        foreach($rowsRole as $role) {
-            if($role['parent_id'] == $roleId) {
+    public function roleChildList($rowsRole, $roleId, &$roleList, $depth = 1)
+    {
+        foreach ($rowsRole as $role) {
+            if ($role['parent_id'] == $roleId) {
                 $role['depth'] = $depth;
                 $roleList[] = $role;
-                $this->roleChildList($rowsRole, $role['id'], $roleList, $depth+1);
+                $this->roleChildList($rowsRole, $role['id'], $roleList, $depth + 1);
             }
         }
     }
@@ -182,17 +191,17 @@ class Role_model extends CI_Model
     public function setPower($roleId, $post)
     {
         $post = lwCheckValue($post, ['rolePowerData']);
-        if($post === false) {
+        if ($post === false) {
             $this->rs['msg'] = '参数缺失';
             return $this->rs;
         }
         $rolePowerData = $post['rolePowerData'];
-        $this->tb_role_power->delete(['role_id'=>$roleId]);
-        foreach($rolePowerData as $power){
+        $this->tb_role_power->delete(['role_id' => $roleId]);
+        foreach ($rolePowerData as $power) {
             // $rowMethod = $this->tb_method->get_one("id = {$power} AND parent_id <> 0");
             $rowMethod = $this->tb_method->get_one(['id' => $power, 'parent_id <>' => 0]);
-            if($rowMethod) {
-                $this->tb_role_power->insert(['role_id'=>$roleId,'method_id'=>$power]);
+            if ($rowMethod) {
+                $this->tb_role_power->insert(['role_id' => $roleId, 'method_id' => $power]);
             }
         }
         $this->rs['success'] = true;

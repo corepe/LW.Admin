@@ -13,32 +13,32 @@ class Menu_model extends CI_Model
     }
 
     // 菜单数组示例
-    // public function get_menu()
-    // {
-    //     $menuList = [];
-    //     $menuList[] = [
-    //         'id' => 1,
-    //         'text' => '菜单',
-    //         'icon' => '',
-    //         'isHeader' => true,
-    //     ];
-    //     $menuList[] = [
-    //         'id' => 10,
-    //         'text' => "系统管理",
-    //         'icon' => "fa fa-list",
-    //         'children' => [
-    //             [
-    //                 'id' => 11,
-    //                 'text' => "管理员管理",
-    //                 'icon' => "fa fa-circle-o",
-    //                 'url' => site_url('admin/index'),
-    //                 'targetType' => "iframe-tab",
-    //                 'urlType' => 'absolute'
-    //             ]
-    //         ]
-    //     ];
-    //     return $menuList;
-    // }
+    public function get_menu()
+    {
+        $menuList = [];
+        $menuList[] = [
+            'id' => 1,
+            'text' => '菜单',
+            'icon' => '',
+            'isHeader' => true,
+        ];
+        $menuList[] = [
+            'id' => 10,
+            'text' => "系统管理",
+            'icon' => "fa fa-list",
+            'children' => [
+                [
+                    'id' => 11,
+                    'text' => "管理员管理",
+                    'icon' => "fa fa-circle-o",
+                    'url' => site_url('admin/index'),
+                    'targetType' => "iframe-tab",
+                    'urlType' => 'absolute'
+                ]
+            ]
+        ];
+        return $menuList;
+    }
 
     /** 获取网站菜单
      * @return 返回菜单数组
@@ -58,39 +58,41 @@ class Menu_model extends CI_Model
         $defaultMenus = [];
         foreach ($rowsMenu as $key => $menu) {
             if ($topRole) {
-                // 最高权限角色
+                // 最高权限角色: 完整菜单
                 $sql = "SELECT
                             a.*,
                             b.`name` AS controller_name,
                             c.id AS menu_id,
                             c.menu_id as parent_menu_id,
-                            c.`name` AS menu_name
+                            c.`name` AS menu_name,
+                            c.param
                         FROM
-                            ".TB_METHOD." a
-                        LEFT JOIN ".TB_METHOD." b on a.parent_id = b.id
-                        LEFT JOIN ".TB_METHOD_MENU." c on a.id = c.method_id
+                            " . TB_METHOD . " a
+                        LEFT JOIN " . TB_METHOD . " b on a.parent_id = b.id
+                        LEFT JOIN " . TB_METHOD_MENU . " c on a.id = c.method_id
                         WHERE a.is_menu = 1
                         AND c.menu_id = {$menu['id']}";
             } else {
-                // 其他权限
+                // 其他权限: 权限菜单+默认菜单
                 $sql = "SELECT
                             a.*, b.`name`,
                             b.controller_name,
                             b.params,
                             c.id AS menu_id,
                             c.menu_id as parent_menu_id,
-                            c.`name` AS menu_name
+                            c.`name` AS menu_name,
+                            c.param
                         FROM
-                            ".TB_ROLE_POWER." a
+                            " . TB_ROLE_POWER . " a
                         LEFT JOIN (
                             SELECT
                                 e.*, f.`name` AS controller_name,
                                 f.`describe` AS controller_describe
                             FROM
-                                ".TB_METHOD." e
-                            LEFT JOIN ".TB_METHOD." f ON e.parent_id = f.id
+                                " . TB_METHOD . " e
+                            LEFT JOIN " . TB_METHOD . " f ON e.parent_id = f.id
                         ) b ON a.method_id = b.id
-                        LEFT JOIN ".TB_METHOD_MENU." c ON b.id = c.method_id
+                        LEFT JOIN " . TB_METHOD_MENU . " c ON b.id = c.method_id
                         WHERE
                             b.is_menu = 1
                         AND a.role_id = {$roleId} and c.menu_id = {$menu['id']}";
@@ -99,30 +101,31 @@ class Menu_model extends CI_Model
                             b.`name` AS controller_name,
                             c.id AS menu_id,
                             c.menu_id as parent_menu_id,
-                            c.`name` AS menu_name
+                            c.`name` AS menu_name,
+                            c.param
                         FROM
-                            ".TB_METHOD." a
-                        LEFT JOIN ".TB_METHOD." b on a.parent_id = b.id
-                        LEFT JOIN ".TB_METHOD_MENU." c on a.id = c.method_id
+                            " . TB_METHOD . " a
+                        LEFT JOIN " . TB_METHOD . " b on a.parent_id = b.id
+                        LEFT JOIN " . TB_METHOD_MENU . " c on a.id = c.method_id
                         WHERE a.is_menu = 1
                         AND c.menu_id = {$menu['id']} AND a.is_default = 1";
                 $defaultMenus = $this->db->query($sqlDefault)->result_array();
             }
             $rowsChildMenu = $this->db->query($sql)->result_array();
             $rowsChildMenu = array_merge($rowsChildMenu, $defaultMenus);
-            if($rowsChildMenu) {
+            if ($rowsChildMenu) {
                 $menuItem = [
                     'id' => $menu['id'],
                     'text' => $menu['name'],
                     'icon' => "fa " . $menu['icon'],
                     'children' => []
                 ];
-                foreach($rowsChildMenu as $childMenu){
+                foreach ($rowsChildMenu as $childMenu) {
                     $menuItem['children'][] = [
                         'id' => $childMenu['menu_id'],
                         'text' => $childMenu['menu_name'],
                         'icon' => "fa fa-circle-o",
-                        'url' => site_url($childMenu['controller_name'].'/'.$childMenu['name']),
+                        'url' => site_url($childMenu['controller_name'] . '/' . $childMenu['name']),
                         'targetType' => "iframe-tab",
                         'urlType' => 'absolute'
                     ];
@@ -221,5 +224,4 @@ class Menu_model extends CI_Model
         }
         return $this->rs;
     }
-
 }
