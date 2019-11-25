@@ -1,28 +1,29 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Admin extends AuthController {
+class Admin extends AuthController
+{
 
-	function __construct()
-	{
-		parent::__construct();
+    function __construct()
+    {
+        parent::__construct();
         $this->load->model('admin_model');
-	}
+    }
 
 
     /**
      * 管理员管理--主页
      */
-	public function index()
-	{
-		$data['assets'] = $this->lw_assets->getPageAssets();
+    public function index()
+    {
+        $data['assets'] = $this->lw_assets->getPageAssets();
         $data['breadcrumb'] = [
-            ['控制器管理',null]
+            ['管理员管理', site_url('admin/index')]
         ];
         $indexData = $this->admin_model->getIndexData();
         $data = array_merge($data, $indexData);
-		$this->_tpl_page('admin/index', $data);
-	}
+        $this->_tpl_page('admin/index', $data);
+    }
 
     /**
      * 管理员管理--列表
@@ -56,7 +57,7 @@ class Admin extends AuthController {
     public function edit($id)
     {
         $post = $this->input->post();
-        if(isset($post['doSubmit'])){
+        if (isset($post['doSubmit'])) {
             // 提交
             $rs = $this->admin_model->edit($id, $post);
             lwReturn($rs);
@@ -76,9 +77,9 @@ class Admin extends AuthController {
      * 管理员管理--删除
      * @param $id TB_ADMIN 主键
      */
-    public function del($id) {
+    public function del($id)
+    {
         $rs = $this->admin_model->setStatus($id, DEL_STATUS, '删除');
         lwReturn($rs);
     }
-
 }

@@ -5,9 +5,10 @@ $assets['jsList'] = isset($assets['jsList']) ? $assets['jsList'] : array();
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
-    <base href="<?= base_url(); ?>"/>
+    <base href="<?= base_url(); ?>" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title></title>
     <!-- Tell the browser to be responsive to screen width -->
@@ -22,7 +23,7 @@ $assets['jsList'] = isset($assets['jsList']) ? $assets['jsList'] : array();
     <link rel="stylesheet" href="assets/css/AdminLTE.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
     <!-- 开始页面级样式 -->
-    <?php foreach ($assets['cssList'] as $css): ?>
+    <?php foreach ($assets['cssList'] as $css) : ?>
         <link href="<?= $css ?>" rel="stylesheet" type="text/css">
     <?php endforeach; ?>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -36,37 +37,60 @@ $assets['jsList'] = isset($assets['jsList']) ? $assets['jsList'] : array();
     <!-- Bootstrap 3.3.6 -->
     <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 </head>
-<body style="background-color: #f9f9f9;">
-<input type="hidden" id="input-baseUrl" value="<?= base_url() ?>">
-<input type="hidden" id="input-siteUrl" value="<?= site_url() ?>">
 
-<section class="content-header">
-    <!-- 面包屑 -->
-    <?php if (isset($breadcrumb)): ?>
-        <ol class="breadcrumb">
-            <?php for ($i = 0; $i < sizeof($breadcrumb); $i++): ?>
-                <li>
-                    <a href="<?= $breadcrumb[$i][1] ? $breadcrumb[$i][1] : "javascript:;" ?>"><?php echo (sizeof($breadcrumb) > $i) ? "<i class='fa fa-dashboard'>" : ""; ?></i><?= $breadcrumb[$i][0] ?></a>
-                </li>
-            <?php endfor; ?>
-        </ol>
-    <?php endif; ?>
-</section>
-<br>
-<!-- Main content -->
-<section class="content">
-    <?= $tpl ?>
-</section>
-<!-- /.content -->
-<div class="modal fade" id="div-modal" tabindex="100" aria-hidden="true"></div>
-<div class="modal fade" id="div-modal-sub" tabindex="1000" aria-hidden="true"></div><!--第二层使用-->
-<!-- 开始页面级插件-->
-<?php foreach ($assets['jsList'] as $js): ?>
-    <script src="<?= $js ?>" type="text/javascript"></script>
-<?php endforeach; ?>
-<!-- 结束页面级插件-->
-<!-- AdminLTE App -->
-<script src="assets/js/app.js"></script>
-<script src="assets/js/utils.js"></script>
+<body style="background-color: #f9f9f9;">
+    <input type="hidden" id="input-baseUrl" value="<?= base_url() ?>">
+    <input type="hidden" id="input-siteUrl" value="<?= site_url() ?>">
+
+    <section class="content-header">
+        <!-- 增加页面导航，返回主页和刷新 -->
+        <div class="btn-group" role="group" aria-label="...">
+            <?php if (isset($breadcrumb[0][1]) && $breadcrumb[0][1]) : ?>
+                <button type="button" class="btn btn-sm btn-default" onclick="globalJumpUrl('<?= $breadcrumb[0][1] ?>')" data-toggle="tooltip" data-placement="right" title="主页">
+                    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                </button>
+            <?php endif; ?>
+            <button type="button" class="btn btn-sm btn-default" onclick="reloadPage()" data-toggle="tooltip" data-placement="right" title="刷新">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+            </button>
+        </div>
+        <script>
+            function reloadPage() {
+                window.location.reload();
+            }
+
+            function globalJumpUrl(url) {
+                window.location.href = url;
+            }
+        </script>
+        <!-- 面包屑 -->
+        <?php if (isset($breadcrumb)) : ?>
+            <ol class="breadcrumb">
+                <?php for ($i = 0; $i < sizeof($breadcrumb); $i++) : ?>
+                    <li>
+                        <a href="<?= $breadcrumb[$i][1] ? $breadcrumb[$i][1] : "javascript:;" ?>"><?php echo (sizeof($breadcrumb) > $i) ? "<i class='fa fa-dashboard'>" : ""; ?></i><?= $breadcrumb[$i][0] ?></a>
+                    </li>
+                <?php endfor; ?>
+            </ol>
+        <?php endif; ?>
+    </section>
+    <br>
+    <!-- Main content -->
+    <section class="content">
+        <?= $tpl ?>
+    </section>
+    <!-- /.content -->
+    <div class="modal fade" id="div-modal" tabindex="100" aria-hidden="true"></div>
+    <div class="modal fade" id="div-modal-sub" tabindex="1000" aria-hidden="true"></div>
+    <!--第二层使用-->
+    <!-- 开始页面级插件-->
+    <?php foreach ($assets['jsList'] as $js) : ?>
+        <script src="<?= $js ?>" type="text/javascript"></script>
+    <?php endforeach; ?>
+    <!-- 结束页面级插件-->
+    <!-- AdminLTE App -->
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/utils.js"></script>
 </body>
+
 </html>

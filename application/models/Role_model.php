@@ -83,7 +83,7 @@ class Role_model extends CI_Model
     {
         $this->load->library('lw_db', ['tb_name' => TB_ADMIN], 'tb_admin');
         // 如果当前角色在用,则不能删除
-        $rowExist = $this->tb_admin->get_one(['role_id' => $id]);
+        $rowExist = $this->tb_admin->get_one(['role_id' => $id, 'status' => 1]);
         if ($rowExist) {
             $this->rs['msg'] = '当前角色正在被使用,角色删除失败';
             return $this->rs;
